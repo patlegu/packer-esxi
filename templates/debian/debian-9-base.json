@@ -1,0 +1,70 @@
+{
+  "builders": [{
+    "name": "debian-9-base",
+    "vm_name": "debian-9-base",
+    "type": "vmware-iso",
+    "guest_os_type": "debian8-64",
+    "output_directory": "debian-9-base",
+    "tools_upload_flavor": "linux",
+    "headless": true,
+
+    "iso_url": "http://debian.univ-lorraine.fr/debian-cd/9.4.0/amd64/iso-cd/debian-9.4.0-amd64-netinst.iso",
+    "iso_checksum": "124d270006703f2111224dec3bf7a9d01450168be41d4834f88fdd035552b044",
+    "iso_checksum_type": "sha256",
+
+    "ssh_username": "owentis",
+    "ssh_password": "owentis",
+    "ssh_timeout": "15m",
+
+    "disk_type_id": "thin",
+
+    "boot_command": [
+      "<esc><wait>",
+      "install ",
+      "preseed/url=http://s3.eu-central-1.amazonaws.com/preseed.juglas.name/debian.cfg ",
+      "debian-installer=en_US auto=true locale=en_US kbd-chooser/method=us ",
+      "netcfg/get_hostname={{ .Name }} ",
+      "netcfg/get_domain=juglas.name ",
+      "fb=false debconf/frontend=noninteractive ",
+      "console-setup/ask_detect=false console-keymaps-at/keymap=us ",
+      "keyboard-configuration/xkb-keymap=us ",
+      "<enter>"
+    ],
+
+    "shutdown_command": "echo 'shutdown -h now' > shutdown.sh; echo 'owentis'|sudo -S sh 'shutdown.sh'",
+
+    "remote_type": "esx5",
+    "remote_host": "{{user `esxi_host`}}",
+    "remote_datastore": "{{user `esxi_datastore`}}",
+    "remote_username": "{{user `esxi_username`}}",
+    "remote_password": "{{user `esxi_password`}}",
+    "keep_registered": true,
+
+    "vmx_data": {
+      "ethernet0.networkName": "VM Network"
+    }
+  }],
+
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+        "scripts/open-vm-tools.sh",
+        "scripts/cloud-init.sh"
+      ],
+
+      "execute_command": "echo 'owentis' | {{ .Vars }} sudo -E -S bash '{{ .Path }}'"
+    }
+  ],
+
+  "post-processors": [
+    {
+      "type": "vsphere-template",
+      "host": "{{user `vsphere_host`}}",
+      "insecure": true,
+      "username": "{{user `vsphere_username`}}",
+      "password": "{{user `vsphere_password`}}",
+      "datacenter": "{{user `vsphere_datacenter`}}"
+    }
+  ]
+}

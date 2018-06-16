@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# Check to make sure we have the latest debian ISO?
+
+packer build -var-file variables.json --only=vmware-iso  $1
