@@ -22,7 +22,7 @@ Ensure that `variables.json` contains valid values.
 
 ## Author
 
-Copyright (c) 2018 Patrice Le Guyader <patrice.leguyader@gmail.com>
+Copyright (c) 2018 Patrice Le Guyader <3754859+patlegu@users.noreply.github.com>
 - For Code from [boxes][] and [packer-esxi][]
 Copyright (c) 2016 Nick Charlton. MIT Licensed.
 
